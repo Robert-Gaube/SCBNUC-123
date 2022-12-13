@@ -11,6 +11,7 @@ void throw_error(char*);
         int (*is_empty)(struct stack_##type stack); \
         void (*push)(struct stack_##type*, type); \
         type (*pop)(struct stack_##type*); \
+        void (*dealloc)(struct stack_##type*); \
     } stack_functions_##type; \
     \
     typedef struct Node_##type{ \
@@ -39,14 +40,18 @@ void throw_error(char*);
         free(aux); \
         return elem; \
     } \
-    int is_empty_##type(struct stack_##type stack) { \
-        return stack.head == NULL; \
+    int is_empty_##type(struct stack_##type* stack) { \
+        return stack -> head == NULL; \
+    } \
+    void dealloc_##type(struct stack_##type* stack) { \
+        while(!is_empty_##type(stack)) pop_##type(stack); \
     } \
     \
     stack_functions_##type funcs_##type = { \
         &is_empty_##type, \
         &push_##type, \
-        &pop_##type \
+        &pop_##type, \
+        &dealloc_##type \
     }; \
     STACK_##type init_##type() { \
         STACK_##type stack; \
@@ -55,6 +60,7 @@ void throw_error(char*);
         return stack; \
     }
 
+
 #define Stack(type) \
     STACK_##type
 
@@ -62,12 +68,15 @@ void throw_error(char*);
     init_##type()
 
 #define is_empty(collection) \
-    collection.funcs.is_empty(collection)
+    collection.funcs.is_empty(&collection)
 
 #define push(collection, elem) \
     collection.funcs.push(&collection, elem)
 
 #define pop(collection) \
     collection.funcs.pop(&collection)
+
+#define dealloc(collection) \
+    collection.funcs.dealloc(&collection)
 
 #endif /* STIVA_H */
