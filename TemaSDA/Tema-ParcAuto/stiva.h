@@ -8,7 +8,7 @@ void throw_error(char*);
 \
     struct stack_##type; \
     typedef struct{ \
-        int (*is_empty)(struct stack_##type stack); \
+        int (*is_empty)(struct stack_##type* stack); \
         void (*push)(struct stack_##type*, type); \
         type (*pop)(struct stack_##type*); \
         void (*dealloc)(struct stack_##type*); \
@@ -76,7 +76,7 @@ void throw_error(char*);
 #define pop(collection) \
     collection.funcs.pop(&collection)
 
-#define dealloc(collection) \
+#define dealloc_stack(collection) \
     collection.funcs.dealloc(&collection)
 
 #endif /* STIVA_H */

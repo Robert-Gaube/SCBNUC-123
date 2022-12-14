@@ -38,3 +38,34 @@ void adauga_masina_in_parc(PARC_AUTO parc, MASINA masina) {
     if(parc == NULL) throw_error("Park is not initialized");
     push(parc -> masini, masina);
 }
+void adauga_parc_in_complex(COMPLEX_AUTO complex, PARC_AUTO parc) {
+    if(complex == NULL) throw_error("Complex is NULL");
+    if(parc == NULL) throw_error("Parc is NULL");
+    if(complex -> numar_parcuri == 5) throw_error("Complex is full");
+    complex -> parcuri[complex -> numar_parcuri++] = parc;
+}
+int este_parc_in_complex(COMPLEX_AUTO complex, int ID) {
+    int i; if(complex == NULL) throw_error("Complex is NULL");
+    for(i = 0; i < complex -> numar_parcuri; ++i) 
+        if(complex -> parcuri[i] -> ID == ID) return i;
+    return -1;
+}
+MASINA scoate_masina_dupa_ID_PARC(COMPLEX_AUTO complex, int ID) {
+    if(complex == NULL) throw_error("Complex is NULL");
+    int index = este_parc_in_complex(complex, ID);
+    if(index == -1) throw_error("The park doesn't exist");
+    
+    return pop(complex -> parcuri[index] -> masini);
+}
+void dealloc_complex(COMPLEX_AUTO complex) {
+    int i;
+    for(i = 0; i < complex -> numar_parcuri; ++i) {
+        dealloc_stack(complex -> parcuri[i] -> masini);
+        free(complex -> parcuri[i]);
+    }
+    free(complex);
+}
+void dealloc_parc(PARC_AUTO parc) {
+    dealloc_stack(parc -> masini);
+    free(parc);
+}
